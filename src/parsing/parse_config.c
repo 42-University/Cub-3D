@@ -6,7 +6,7 @@
 /*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 18:13:46 by tkenji-u          #+#    #+#             */
-/*   Updated: 2026/05/04 18:41:59 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/05/04 19:37:00 by tkenji-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,10 @@ void	parse_file(t_game *game, char *filename)
 			game->map.e_texture = ft_strtrim(&line[i], " \n");
 		}
 		else if (ft_strncmp(line, "F ", 2) == 0)
+		{
+			
+		}
+		else if (ft_strncmp(line, "C ", 2) == 0)
 		{
 			
 		}
