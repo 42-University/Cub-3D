@@ -5,6 +5,7 @@
 ## Description
 The **cub3D** project is a 3D graphical adventure inspired by the world-famous Wolfenstein 3D, often cited as the first FPS (First-Person Shooter) ever created. The goal of this project is to explore the "ray-casting" technique to create a dynamic first-person view inside a maze. Using the **miniLibX** library, the program parses a map file and renders a "realistic" 3D representation of the environment, where the user can navigate in real-time.
 
+
 ## Instructions
 
 ### Compilation
