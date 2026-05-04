@@ -46,12 +46,64 @@ typedef struct s_player
 	double	plane_y;
 }			t_player;
 
+typedef struct s_img
+{
+	void	*img_ptr;
+	char	*pixels;
+	int		bpp;
+	int		size_line;
+	int		endian;
+	int		width;
+	int		height;
+}			t_img;
+
+typedef struct s_tex
+{
+	void	*img_ptr;
+	char	*pixels;
+	int		bpp;
+	int		size_line;
+	int		endian;
+	int		width;
+	int		height;
+}			t_tex;
+
+typedef struct s_renderer
+{
+	t_img	img;
+	t_tex	textures[4];
+	int		win_width;
+	int		win_height;
+	int		should_close;
+}			t_renderer;
+
+typedef struct s_column_info
+{
+	double	distance;
+	int		face;
+	double	tex_offset;
+}			t_column_info;
+
 typedef struct s_game
 {
 	t_map		map;
 	t_player	player;
 	void		*mlx_ptr;
 	void		*win_ptr;
+	t_renderer	renderer;
 }				t_game;
+
+int				renderer_init(t_game *game);
+int				renderer_loop(t_game *game);
+void			renderer_destroy(t_game *game);
+int				raycast_column(t_game *game, int x, t_column_info *info);
+void			put_pixel(t_img *img, int x, int y, int color);
+void			draw_vertical_line(t_game *game, int x, int height, int color);
+void			fill_background(t_game *game);
+int				texture_load(void *mlx, const char *path, t_tex *texture);
+void			texture_free(void *mlx, t_tex *texture);
+int				texture_sample(t_tex *texture, int x, int y);
+int				events_init(t_game *game);
+void			movement_update(t_game *game);
 
 #endif
