@@ -6,7 +6,7 @@
 /*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 18:04:56 by tkenji-u          #+#    #+#             */
-/*   Updated: 2026/05/04 18:17:34 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/05/04 20:55:59 by tkenji-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,5 +105,9 @@ void			texture_free(void *mlx, t_tex *texture);
 int				texture_sample(t_tex *texture, int x, int y);
 int				events_init(t_game *game);
 void			movement_update(t_game *game);
+//utils
+void			free_matrix(char **matrix);
+//parse
+void			parse_file(t_game *game, char *filename);
 
 #endif
