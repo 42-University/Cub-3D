@@ -14,7 +14,7 @@ NAME        = cub3D
 
 CC          = cc
 CFLAGS      = -Wall -Wextra -Werror -g3
-MLX_FLAGS   = -lmlx -framework OpenGL -framework AppKit -lm
+MLX_FLAGS   = -lmlx -lX11 -lXext -lm
 
 SRC_DIR     = src
 INC_DIR     = include
@@ -24,7 +24,12 @@ LIBFT_DIR   = libft
 SRC_FILES   = main.c \
               parsing/parse_config.c \
               parsing/parse_map.c \
-              utils/utils.c
+              utils/utils.c \
+              renderer.c \
+              raycast.c \
+              draw.c \
+              texture.c \
+              events.c
 
 SRC         = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ         = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
