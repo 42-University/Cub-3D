@@ -25,11 +25,11 @@ SRC_FILES   = main.c \
               parsing/parse_config.c \
               parsing/parse_map.c \
               utils/utils.c \
-              renderer.c \
-              raycast.c \
-              draw.c \
-              texture.c \
-              events.c
+              visual/renderer.c \
+              visual/raycast.c \
+              visual/draw.c \
+              visual/texture.c \
+              visual/events.c
 
 SRC         = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ         = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
