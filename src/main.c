@@ -67,5 +67,12 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	init_game(&game);
+	if (!renderer_init(&game))
+	{
+		printf("Error\nFailed to initialize renderer.\n");
+		return (1);
+	}
+	renderer_loop(&game);
+	renderer_destroy(&game);
 	return (0);
 }
