@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thiagouemura <thiagouemura@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 18:04:56 by tkenji-u          #+#    #+#             */
-/*   Updated: 2026/05/04 20:55:59 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/05/07 17:06:12 by thiagouemur      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,11 @@ int				events_init(t_game *game);
 void			movement_update(t_game *game);
 //utils
 void			free_matrix(char **matrix);
+int				is_map_line(char *line);
 //parse
 void			parse_file(t_game *game, char *filename);
+void			convert_list_to_matrix(t_game *game, t_list *map_lines);
+int				validade_map_chars(t_game *game);
+int				validate_walls(t_game *game);
 
 #endif

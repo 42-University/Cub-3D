@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thiagouemura <thiagouemura@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 18:13:42 by tkenji-u          #+#    #+#             */
-/*   Updated: 2026/05/04 18:16:00 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/05/07 17:31:44 by thiagouemur      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	init_game(&game);
+	parse_file(&game, av[1]);
 	if (!renderer_init(&game))
 	{
 		printf("Error\nFailed to initialize renderer.\n");

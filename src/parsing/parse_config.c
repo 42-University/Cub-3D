@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_config.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thiagouemura <thiagouemura@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 18:13:46 by tkenji-u          #+#    #+#             */
-/*   Updated: 2026/05/04 20:57:27 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/05/07 17:32:24 by thiagouemur      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,9 @@ void	parse_file(t_game *game, char *filename)
 {
 	int		fd;
 	char	*line;
+	t_list	*map_lines;
 
+	map_lines = NULL;
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 	{
@@ -99,8 +101,11 @@ void	parse_file(t_game *game, char *filename)
 		if (!line)
 			break ;
 		parse_line(game, line);
-		printf("%s", line);
+		if (is_map_line(line) == 1)
+			ft_lstadd_back(&map_lines, ft_lstnew(ft_strdup(line)));
 		free(line);
 	}
 	close(fd);
+	convert_list_to_matrix(game, map_lines);
+	validate_map(game);
 }
