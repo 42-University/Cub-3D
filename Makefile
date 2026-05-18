@@ -6,7 +6,7 @@
 #    By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/24 17:57:39 by tkenji-u          #+#    #+#              #
-#    Updated: 2026/04/24 18:07:51 by tkenji-u         ###   ########.fr        #
+#    Updated: 2026/05/04 20:52:50 by tkenji-u         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ LIBFT_DIR   = libft
 SRC_FILES   = main.c \
               parsing/parse_config.c \
               parsing/parse_map.c \
-              utils/utils.c \
+              utils/parser_utils.c \
               visual/renderer.c \
               visual/raycast.c \
               visual/draw.c \
