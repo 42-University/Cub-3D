@@ -14,7 +14,8 @@ NAME        = cub3D
 
 CC          = cc
 CFLAGS      = -Wall -Wextra -Werror -g3
-MLX_FLAGS   = -lmlx -lX11 -lXext -lm
+MLX_DIR     = minilibx-linux
+MLX_FLAGS   = -L$(MLX_DIR) -lmlx -lX11 -lXext -lm
 
 SRC_DIR     = src
 INC_DIR     = include
@@ -34,7 +35,7 @@ SRC_FILES   = main.c \
 SRC         = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ         = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
 
-INC         = -I $(INC_DIR) -I $(LIBFT_DIR)
+INC         = -I $(INC_DIR) -I $(LIBFT_DIR) -I $(MLX_DIR)
 
 LIBFT       = $(LIBFT_DIR)/libft.a
 
