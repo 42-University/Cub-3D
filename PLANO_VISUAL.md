@@ -13,7 +13,7 @@ Este documento descreve o planejamento completo das tarefas da parte visual do p
 2. Loader de texturas XPM e mapeamento por coluna
 3. Motor de desenho (double buffer) e desenho de colunas texturizadas
 4. Eventos (W/A/S/D e rotação) com verificação de colisão
-5. Harness de teste (modo `mock`) para render local sem parser
+5. Harness de teste (modo de teste) para render local sem parser
 6. Integração com parser quando disponível
 7. Testes (norminette, valgrind) e documentação mínima
 
@@ -26,11 +26,11 @@ cd /home/liferrei/Cub-3d
 make            # compila libft + binário
 ```
 
-2) Harness de teste (mock)
+2) Harness de teste (modo de teste)
    - Criar função que monta um `t_map` em memória (paredes em anel e algumas texturas test).
    - Inicializar `t_game` com posições do jogador e caminhos XPM de teste.
-   - Adicionar flag `mock` ao `main` para iniciar usando esse mapa.
-   - Garantir que exista um mecanismo para remover esse código quando o parser real chegar (lembrar memória `/memories/session/remove_mock_note.md`).
+   - Implementar mecanismo local que monta um `t_map` em memória para desenvolvimento sem parser.
+   - Garantir que exista um mecanismo para remover esse código quando o parser real chegar.
 
 3) Implementar DDA e detecção de face
    - Substituir solução passo-a-passo por DDA grid-aligned (calc de stepX/stepY, sideDist, deltaDist).
@@ -61,12 +61,12 @@ make            # compila libft + binário
    - Verificar colisões por checagem de célula antes de atualizar posição.
 
 9) Integração com parser
-   - Substituir o mock: ao receber `t_map` do parser, carregar texturas apontadas pelo arquivo .cub.
+   - Substituir o harness de teste: ao receber `t_map` do parser, carregar texturas apontadas pelo arquivo .cub.
    - Validar cores F/C e converter para RGB int.
 
 10) Testes e validação
    - Passar `norminette` em todos os arquivos novos.
-   - Rodar `valgrind --leak-check=full ./Cub-3D mock` e corrigir vazamentos.
+   - Rodar `valgrind --leak-check=full ./cub3D maps/map.cub` e corrigir vazamentos.
 
 11) Documentação e entrega
    - Atualizar `README.md` com instruções de build/exec e dependências.
@@ -78,7 +78,7 @@ make            # compila libft + binário
 - [ ] Calcular `tex_x`, `tex_y` e amostragem em `src/visual/texture.c`
 - [ ] Substituir drawing por buffer em `src/visual/draw.c`
 - [ ] Implementar `events_init` e `movement_update` com delta time
-- [ ] Adicionar remoção do mock (flag/ifdef) para integração final
+- [ ] Adicionar remoção do código de teste (flag/ifdef) para integração final
 - [ ] Adicionar scripts: `make norm`, `make valgrind` (opcional)
 
 ## Prazos sugeridos (estimates)
@@ -96,6 +96,11 @@ make            # compila libft + binário
 - Teste incrementalmente: render sem textura → textura sem shading → shading.
 
 ---
+
+## Responsáveis
+
+- Parte Visual: atribuição confirmada ao membro responsável pela parte visual (sem nomes nem datas).  
+
 
 Arquivo gerado automaticamente pelo agente. Quando quiser, posso:
 - Atualizar o plano com datas exatas e responsáveis por tarefa.

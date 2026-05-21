@@ -41,3 +41,18 @@ In accordance with the 42 curriculum guidelines, Artificial Intelligence (AI) wa
 * **Error Handling**: Used to refine the "Error\n" messages and ensure the program exits cleanly without memory leaks.
 * **Code Review**: AI was used to explain complex ray-casting mathematical formulas and to simulate peer-review scenarios to identify potential logical gaps before the final evaluation.
 All AI-generated suggestions were thoroughly reviewed, tested, and understood before being integrated into the project.
+
+## Responsáveis
+
+- Parte Visual: `src/visual/` — atribuída ao membro responsável pela parte visual (sem nomes nem datas).
+
+## Running
+
+Compile and run the project using the provided Makefile. The program expects a `.cub` scene file as its only argument.
+
+```bash
+make
+./cub3D maps/map.cub
+```
+
+Controls: `W A S D` to move, `← →` to rotate, `ESC` to exit.

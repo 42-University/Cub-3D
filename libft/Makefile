@@ -71,7 +71,7 @@ AR = ar crs
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(BONUS_OBJS)
 	$(AR) $@ $^
 
 all: $(NAME)
@@ -84,7 +84,6 @@ fclean: clean
 
 re: fclean all
 
-bonus: $(OBJS) $(BONUS_OBJS)
-	$(AR) $(NAME) $(OBJS) $(BONUS_OBJS)
+bonus: $(NAME)
 
 .PHONY: all clean fclean re bonus

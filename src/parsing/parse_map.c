@@ -18,8 +18,8 @@ void	convert_list_to_matrix(t_game *game, t_list *map_lines)
 	t_list	*current;
 	t_list	*temp;
 
-	game->map.grid = malloc(sizeof(char *) * (ft_lstsize(map_lines) + 1));
-	if (!game->map.grid)
+	game->map.map = malloc(sizeof(char *) * (ft_lstsize(map_lines) + 1));
+	if (!game->map.map)
 	{
 		printf("Error\nMemory allocation failed.\n");
 		exit(1);
@@ -28,10 +28,10 @@ void	convert_list_to_matrix(t_game *game, t_list *map_lines)
 	current = map_lines;
 	while (current != NULL)
 	{
-		game->map.grid[i++] = (char *)current->content;
+		game->map.map[i++] = (char *)current->content;
 		current = current->next;
 	}
-	game->map.grid[i] = NULL;
+	game->map.map[i] = NULL;
 	while (map_lines != NULL)
 	{
 		temp = map_lines;
@@ -48,14 +48,14 @@ int	validade_map_chars(t_game *game)
 
 	player = 0;
 	y = 0;
-	while (game->map.grid[y])
+	while (game->map.map[y])
 	{
 		x = 0;
-		while (game->map.grid[y][x])
+		while (game->map.map[y][x])
 		{
-			if (ft_strchr(" 01NSEW", game->map.grid[y][x]) == NULL)
+			if (ft_strchr(" 01NSEW", game->map.map[y][x]) == NULL)
 				return (0);
-			if (ft_strchr("NSEW", game->map.grid[y][x]) != NULL)
+			if (ft_strchr("NSEW", game->map.map[y][x]) != NULL)
 				player++;
 			x++;
 		}
@@ -96,7 +96,7 @@ int	validate_walls(t_game *game)
 	int		is_closed;
 
 	max_y = 0;
-	while (game->map.grid[max_y])
+	while (game->map.map[max_y])
 		max_y++;
 	map_copy = malloc(sizeof(char *) * (max_y + 1));
 	if (!map_copy)
@@ -107,7 +107,7 @@ int	validate_walls(t_game *game)
 	i = 0;
 	while (i < max_y)
 	{
-		map_copy[i] = ft_strdup(game->map.grid[i]);
+		map_copy[i] = ft_strdup(game->map.map[i]);
 		i++;
 	}
 	map_copy[i] = NULL;

@@ -29,15 +29,88 @@ static int	render_frame(t_game *game)
 {
 	int				x;
 	t_column_info	col;
-
 	if (game->renderer.should_close)
 		return (0);
+	movement_update(game);
 	fill_background(game);
 	x = 0;
 	while (x < game->renderer.win_width)
 	{
 		if (raycast_column(game, x, &col))
-			draw_vertical_line(game, x, game->renderer.win_height, 0xFFFFFF);
+		{
+			int line_height;
+			int draw_start;
+			int draw_end;
+			t_tex *tex;
+			int tex_x;
+			double step_tex;
+			double tex_pos;
+			int y;
+
+			if (col.distance <= 0.0)
+				col.distance = 1e-6;
+			line_height = (int)(game->renderer.win_height / col.distance);
+			if (line_height < 1)
+				line_height = 1;
+			draw_start = -line_height / 2 + game->renderer.win_height / 2;
+			if (draw_start < 0)
+				draw_start = 0;
+			draw_end = line_height / 2 + game->renderer.win_height / 2;
+			if (draw_end >= game->renderer.win_height)
+				draw_end = game->renderer.win_height - 1;
+
+			tex = &game->renderer.textures[col.face];
+			if (tex && tex->pixels && tex->width > 0 && tex->height > 0)
+			{
+				tex_x = (int)(col.tex_offset * (double)tex->width);
+				if (tex_x < 0)
+					tex_x = 0;
+				if (tex_x >= tex->width)
+					tex_x = tex->width - 1;
+				step_tex = (double)tex->height / (double)line_height;
+				tex_pos = (draw_start - game->renderer.win_height / 2 + line_height / 2) * step_tex;
+				y = draw_start;
+				while (y <= draw_end)
+				{
+					int tex_y = (int)tex_pos;
+					int sample = texture_sample(tex, tex_x, tex_y);
+					double shade = 1.0 / (1.0 + 0.05 * col.distance);
+					int r = (int)((((sample >> 16) & 0xFF)) * shade);
+					int g = (int)((((sample >> 8) & 0xFF)) * shade);
+					int b = (int)(((sample & 0xFF)) * shade);
+					int color = (r << 16) | (g << 8) | b;
+					put_pixel(&game->renderer.img, x, y, color);
+					tex_pos += step_tex;
+					y++;
+				}
+			}
+			else
+			{
+				/* fallback to solid color per face with shading */
+				int color;
+				double shade;
+
+				if (col.face == 0)
+					color = 0xFF0000;
+				else if (col.face == 1)
+					color = 0x00FF00;
+				else if (col.face == 2)
+					color = 0x0000FF;
+				else
+					color = 0xFFFF00;
+				shade = 1.0 / (1.0 + 0.05 * col.distance);
+				int rr = (int)(((color >> 16) & 0xFF) * shade);
+				int gg = (int)(((color >> 8) & 0xFF) * shade);
+				int bb = (int)((color & 0xFF) * shade);
+				color = (rr << 16) | (gg << 8) | bb;
+				int yy = draw_start;
+				while (yy <= draw_end)
+				{
+					put_pixel(&game->renderer.img, x, yy, color);
+					yy++;
+				}
+			}
+		}
 		x++;
 	}
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr,
@@ -68,6 +141,24 @@ int	renderer_init(t_game *game)
 	game->renderer.img.height = game->renderer.win_height;
 	if (!events_init(game))
 		return (0);
+	/* load textures if paths are provided */
+	{
+		const char *paths[4] = {game->map.n_texture, game->map.s_texture,
+			game->map.w_texture, game->map.e_texture};
+		int i;
+
+		i = 0;
+		while (i < 4)
+		{
+			game->renderer.textures[i].img_ptr = NULL;
+			game->renderer.textures[i].pixels = NULL;
+			game->renderer.textures[i].width = 0;
+			game->renderer.textures[i].height = 0;
+			if (paths[i])
+				texture_load(game->mlx_ptr, paths[i], &game->renderer.textures[i]);
+			i++;
+		}
+	}
 	return (1);
 }
 

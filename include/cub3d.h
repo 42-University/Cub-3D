@@ -113,5 +113,6 @@ void			parse_file(t_game *game, char *filename);
 void			convert_list_to_matrix(t_game *game, t_list *map_lines);
 int				validade_map_chars(t_game *game);
 int				validate_walls(t_game *game);
+int		check_extension(const char *filename);
 
 #endif

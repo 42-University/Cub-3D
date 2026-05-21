@@ -53,3 +53,15 @@ int	is_map_line(char *line)
 	}
 	return (1);
 }
+
+int	check_extension(const char *filename)
+{
+	size_t len;
+
+	if (!filename)
+		return (0);
+	len = ft_strlen((char *)filename);
+	if (len < 4)
+		return (0);
+	return (ft_strncmp(filename + len - 4, ".cub", 4) == 0);
+}

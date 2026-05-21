@@ -14,10 +14,11 @@
 
 void	init_game(t_game *game)
 {
-	int	i;
+	int i;
 
 	game->mlx_ptr = NULL;
 	game->win_ptr = NULL;
+	game->renderer.img.img_ptr = NULL;
 	game->map.n_texture = NULL;
 	game->map.s_texture = NULL;
 	game->map.w_texture = NULL;
@@ -40,21 +41,9 @@ void	init_game(t_game *game)
 	game->player.plane_y = 0.0;
 }
 
-int	check_extension(char *filename)
-{
-	int	len;
-
-	len = ft_strlen(filename);
-	if (len < 4)
-		return (0);
-	if (ft_strncmp(&filename[len - 4], ".cub", 4) != 0)
-		return (0);
-	return (1);
-}
-
 int	main(int ac, char **av)
 {
-	t_game	game;
+	t_game game;
 
 	if (ac != 2)
 	{
