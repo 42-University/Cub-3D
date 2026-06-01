@@ -75,6 +75,7 @@ typedef struct s_renderer
 	int		win_width;
 	int		win_height;
 	int		should_close;
+	double	last_time; /* timestamp of last frame in seconds */
 }			t_renderer;
 
 typedef struct s_column_info
@@ -82,6 +83,7 @@ typedef struct s_column_info
 	double	distance;
 	int		face;
 	double	tex_offset;
+	int		flip; /* 1 if texture X should be flipped horizontally */
 }			t_column_info;
 
 typedef struct s_game

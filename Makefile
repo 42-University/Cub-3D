@@ -42,6 +42,12 @@ LIBFT       = $(LIBFT_DIR)/libft.a
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
+	@# ensure miniLibX headers exist
+	@test -f $(MLX_DIR)/mlx.h || { \
+		echo "miniLibX not found in $(MLX_DIR). Please clone and build it:"; \
+		echo "  git clone https://github.com/42Paris/minilibx-linux.git $(MLX_DIR)"; \
+		echo "  cd $(MLX_DIR) && make"; \
+		exit 1; }
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 	@echo "$(NAME) compiled successfully!"
 
@@ -66,4 +72,13 @@ re: fclean all
 
 bonus: all
 
-.PHONY: all clean fclean re bonus
+norm:
+	@command -v norminette >/dev/null 2>&1 || { echo "norminette not found. Install with 'pip3 install norminette'"; exit 1; }
+	@norminette $(SRC_DIR) $(INC_DIR) $(LIBFT_DIR)
+
+valgrind:
+	@command -v valgrind >/dev/null 2>&1 || { echo "valgrind not found. Install via your package manager."; exit 1; }
+	@test -f $(NAME) || { echo "$(NAME) not found. Run 'make' first."; exit 1; }
+	@valgrind --leak-check=full ./$(NAME) --harness
+
+.PHONY: all clean fclean re bonus norm valgrind

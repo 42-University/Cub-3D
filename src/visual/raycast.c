@@ -99,6 +99,8 @@ int	raycast_column(t_game *game, int x, t_column_info *info)
 	wall_x -= floor(wall_x);
 	info->distance = perp_dist;
 	info->tex_offset = wall_x;
+    /* determine if texture X should be flipped to match orientation */
+    info->flip = 0;
 	if (side == 0)
 	{
 		if (ray_dir_x > 0)
@@ -113,5 +115,7 @@ int	raycast_column(t_game *game, int x, t_column_info *info)
 		else
 			info->face = 0; /* north */
 	}
+    if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
+        info->flip = 1;
 	return (1);
 }

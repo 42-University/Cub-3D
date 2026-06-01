@@ -67,12 +67,22 @@ static int	render_frame(t_game *game)
 					tex_x = 0;
 				if (tex_x >= tex->width)
 					tex_x = tex->width - 1;
+				if (col.flip)
+				{
+					tex_x = tex->width - tex_x - 1;
+					if (tex_x < 0)
+						tex_x = 0;
+				}
 				step_tex = (double)tex->height / (double)line_height;
 				tex_pos = (draw_start - game->renderer.win_height / 2 + line_height / 2) * step_tex;
 				y = draw_start;
 				while (y <= draw_end)
 				{
 					int tex_y = (int)tex_pos;
+					if (tex_y < 0)
+						tex_y = 0;
+					if (tex_y >= tex->height)
+						tex_y = tex->height - 1;
 					int sample = texture_sample(tex, tex_x, tex_y);
 					double shade = 1.0 / (1.0 + 0.05 * col.distance);
 					int r = (int)((((sample >> 16) & 0xFF)) * shade);
@@ -139,6 +149,12 @@ int	renderer_init(t_game *game)
 			&game->renderer.img.endian);
 	game->renderer.img.width = game->renderer.win_width;
 	game->renderer.img.height = game->renderer.win_height;
+	/* initialize timing for delta-time movement */
+	{
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		game->renderer.last_time = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+	}
 	if (!events_init(game))
 		return (0);
 	/* load textures if paths are provided */

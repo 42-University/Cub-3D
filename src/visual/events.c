@@ -17,20 +17,20 @@ static int	g_key_state[1024];
 
 static int	map_key(int keycode)
 {
-	/* map common X11 keycodes to small indices used below */
-	if (keycode == 65307) /* ESC X11 */
+	/* Support both macOS and Linux (X11) keycodes */
+	if (keycode == 65307 || keycode == 53) /* ESC */
 		return (53);
-	if (keycode == 65361) /* left */
+	if (keycode == 65361 || keycode == 123) /* left */
 		return (123);
-	if (keycode == 65363) /* right */
+	if (keycode == 65363 || keycode == 124) /* right */
 		return (124);
-	if (keycode == 'w' /*119*/)
+	if (keycode == 'w' /*119*/ || keycode == 13) /* forward */
 		return (13);
-	if (keycode == 's' /*115*/)
+	if (keycode == 's' /*115*/ || keycode == 1) /* back */
 		return (1);
-	if (keycode == 'a' /*97*/)
+	if (keycode == 'a' /*97*/ || keycode == 0) /* strafe left */
 		return (0);
-	if (keycode == 'd' /*100*/)
+	if (keycode == 'd' /*100*/ || keycode == 2) /* strafe right */
 		return (2);
 	return (keycode);
 }
@@ -99,16 +99,32 @@ static int	map_is_wall(t_map *map, double nx, double ny)
 
 void	movement_update(t_game *game)
 {
-	double move_speed = 0.08;
-	double rot_speed = 0.06;
+	const double move_speed_per_s = 3.0; /* units per second */
+	const double rot_speed_per_s = 2.5; /* radians per second */
+	struct timeval tv;
+	double now;
+	double dt;
 	double new_x;
 	double new_y;
+
+	gettimeofday(&tv, NULL);
+	now = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+	if (game->renderer.last_time <= 0.0)
+		dt = 0.016;
+	else
+		dt = now - game->renderer.last_time;
+	if (dt <= 0.0 || dt > 0.5)
+		dt = 0.016;
+	game->renderer.last_time = now;
+
+	double move_step = move_speed_per_s * dt;
+	double rot_step = rot_speed_per_s * dt;
 
 	/* forward (W) */
 	if (g_key_state[13])
 	{
-		new_x = game->player.x + game->player.dir_x * move_speed;
-		new_y = game->player.y + game->player.dir_y * move_speed;
+		new_x = game->player.x + game->player.dir_x * move_step;
+		new_y = game->player.y + game->player.dir_y * move_step;
 		if (!map_is_wall(&game->map, new_x, game->player.y))
 			game->player.x = new_x;
 		if (!map_is_wall(&game->map, game->player.x, new_y))
@@ -117,8 +133,8 @@ void	movement_update(t_game *game)
 	/* back (S) */
 	if (g_key_state[1])
 	{
-		new_x = game->player.x - game->player.dir_x * move_speed;
-		new_y = game->player.y - game->player.dir_y * move_speed;
+		new_x = game->player.x - game->player.dir_x * move_step;
+		new_y = game->player.y - game->player.dir_y * move_step;
 		if (!map_is_wall(&game->map, new_x, game->player.y))
 			game->player.x = new_x;
 		if (!map_is_wall(&game->map, game->player.x, new_y))
@@ -127,8 +143,8 @@ void	movement_update(t_game *game)
 	/* strafe right (D) */
 	if (g_key_state[2])
 	{
-		new_x = game->player.x + game->player.dir_y * move_speed;
-		new_y = game->player.y - game->player.dir_x * move_speed;
+		new_x = game->player.x + game->player.dir_y * move_step;
+		new_y = game->player.y - game->player.dir_x * move_step;
 		if (!map_is_wall(&game->map, new_x, game->player.y))
 			game->player.x = new_x;
 		if (!map_is_wall(&game->map, game->player.x, new_y))
@@ -137,8 +153,8 @@ void	movement_update(t_game *game)
 	/* strafe left (A) */
 	if (g_key_state[0])
 	{
-		new_x = game->player.x - game->player.dir_y * move_speed;
-		new_y = game->player.y + game->player.dir_x * move_speed;
+		new_x = game->player.x - game->player.dir_y * move_step;
+		new_y = game->player.y + game->player.dir_x * move_step;
 		if (!map_is_wall(&game->map, new_x, game->player.y))
 			game->player.x = new_x;
 		if (!map_is_wall(&game->map, game->player.x, new_y))
@@ -148,20 +164,20 @@ void	movement_update(t_game *game)
 	if (g_key_state[123])
 	{
 		double old_dir_x = game->player.dir_x;
-		game->player.dir_x = game->player.dir_x * cos(rot_speed) - game->player.dir_y * sin(rot_speed);
-		game->player.dir_y = old_dir_x * sin(rot_speed) + game->player.dir_y * cos(rot_speed);
+		game->player.dir_x = game->player.dir_x * cos(rot_step) - game->player.dir_y * sin(rot_step);
+		game->player.dir_y = old_dir_x * sin(rot_step) + game->player.dir_y * cos(rot_step);
 		double old_plane_x = game->player.plane_x;
-		game->player.plane_x = game->player.plane_x * cos(rot_speed) - game->player.plane_y * sin(rot_speed);
-		game->player.plane_y = old_plane_x * sin(rot_speed) + game->player.plane_y * cos(rot_speed);
+		game->player.plane_x = game->player.plane_x * cos(rot_step) - game->player.plane_y * sin(rot_step);
+		game->player.plane_y = old_plane_x * sin(rot_step) + game->player.plane_y * cos(rot_step);
 	}
 	/* rotate right */
 	if (g_key_state[124])
 	{
 		double old_dir_x = game->player.dir_x;
-		game->player.dir_x = game->player.dir_x * cos(-rot_speed) - game->player.dir_y * sin(-rot_speed);
-		game->player.dir_y = old_dir_x * sin(-rot_speed) + game->player.dir_y * cos(-rot_speed);
+		game->player.dir_x = game->player.dir_x * cos(-rot_step) - game->player.dir_y * sin(-rot_step);
+		game->player.dir_y = old_dir_x * sin(-rot_step) + game->player.dir_y * cos(-rot_step);
 		double old_plane_x = game->player.plane_x;
-		game->player.plane_x = game->player.plane_x * cos(-rot_speed) - game->player.plane_y * sin(-rot_speed);
-		game->player.plane_y = old_plane_x * sin(-rot_speed) + game->player.plane_y * cos(-rot_speed);
+		game->player.plane_x = game->player.plane_x * cos(-rot_step) - game->player.plane_y * sin(-rot_step);
+		game->player.plane_y = old_plane_x * sin(-rot_step) + game->player.plane_y * cos(-rot_step);
 	}
 }

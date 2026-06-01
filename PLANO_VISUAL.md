@@ -106,3 +106,24 @@ Arquivo gerado automaticamente pelo agente. Quando quiser, posso:
 - Atualizar o plano com datas exatas e responsáveis por tarefa.
 - Gerar `Makefile` targets auxiliares como `make norm` e `make valgrind`.
 
+## Atualizações aplicadas
+
+- Implementado loader XPM e sampler de texturas (`src/visual/texture.c`).
+- Corrigido raycaster para fornecer `face`, `tex_offset` e `flip` (`src/visual/raycast.c`).
+- Aplicada inversão horizontal de textura quando necessária em `src/visual/renderer.c`.
+- Implementado rendering protegido (clamp em `tex_y`) e shading por distância.
+- Adicionado controle por estados de tecla e movimento com delta-time (`src/visual/events.c`).
+- Adicionado modo `--harness` para testes sem parser e mapa de exemplo em `maps/test_map.cub`.
+- Strip de `\n` nas linhas do mapa ao converter lista→matriz para evitar falhas de validação (`src/parsing/parse_map.c`).
+
+## Teste rápido (Linux)
+
+Compile e rode o modo harness:
+
+```bash
+make
+./cub3D --harness
+```
+
+O modo `--harness` cria um mapa mínimo em memória e posiciona o jogador para testes visuais sem precisar de um arquivo `.cub`.
+

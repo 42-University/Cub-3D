@@ -56,3 +56,19 @@ make
 ```
 
 Controls: `W A S D` to move, `← →` to rotate, `ESC` to exit.
+
+## Quick test (no .cub required)
+
+During development a small harness mode is available to run a minimal map in memory without a `.cub` file. Build and run:
+
+```bash
+make
+./cub3D --harness
+```
+
+This is useful for iterating on visuals when a scene file is not ready.
+
+## Notes for Linux / miniLibX
+
+- Ensure `minilibx-linux` is compiled (the repository includes a local copy in `minilibx-linux`).
+- The `Makefile` is expected to link with the local MLX: `-Lminilibx-linux -lmlx` and may require `-lX11 -lXext -lm` depending on your distro.

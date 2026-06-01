@@ -29,6 +29,12 @@ void	convert_list_to_matrix(t_game *game, t_list *map_lines)
 	while (current != NULL)
 	{
 		game->map.map[i++] = (char *)current->content;
+		/* strip trailing newline if present */
+		{
+			size_t l = ft_strlen(game->map.map[i - 1]);
+			if (l > 0 && game->map.map[i - 1][l - 1] == '\n')
+				game->map.map[i - 1][l - 1] = '\0';
+		}
 		current = current->next;
 	}
 	game->map.map[i] = NULL;
