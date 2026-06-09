@@ -77,7 +77,7 @@ int	renderer_init(t_game *game)
 
 int	renderer_loop(t_game *game)
 {
-	mlx_loop_hook(game->mlx_ptr, render_frame, game);
+	mlx_loop_hook(game->mlx_ptr, hook_game(render_frame), game);
 	mlx_loop(game->mlx_ptr);
 	return (0);
 }

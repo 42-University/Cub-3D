@@ -1,0 +1,14 @@
+# Build artifacts
+obj/
+*.o
+*.a
+*.d
+
+# Final binary
+cub3D
+
+# Editor / OS
+.vscode/
+*.swp
+*.swo
+.DS_Store

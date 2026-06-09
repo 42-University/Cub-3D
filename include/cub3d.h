@@ -123,6 +123,20 @@ typedef struct s_draw
 	double	tex_pos;
 }			t_draw;
 
+typedef int	(*t_hook)(void);
+
+typedef union u_game_hook
+{
+	t_hook	generic;
+	int		(*typed)(t_game *);
+}			t_game_hook;
+
+typedef union u_key_hook
+{
+	t_hook	generic;
+	int		(*typed)(int, t_game *);
+}			t_key_hook;
+
 /* main / init / cleanup */
 void			init_game(t_game *game);
 void			free_game(t_game *game);
@@ -132,6 +146,10 @@ void			renderer_destroy(t_game *game);
 int				renderer_init(t_game *game);
 int				renderer_loop(t_game *game);
 int				render_frame(t_game *game);
+
+/* hooks (function-pointer type laundering for mlx) */
+t_hook			hook_game(int (*f)(t_game *));
+t_hook			hook_key(int (*f)(int, t_game *));
 
 /* raycast */
 int				raycast_column(t_game *game, int x, t_column_info *info);

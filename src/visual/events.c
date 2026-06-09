@@ -62,8 +62,8 @@ static int	on_close(t_game *game)
 int	events_init(t_game *game)
 {
 	mlx_do_key_autorepeatoff(game->mlx_ptr);
-	mlx_hook(game->win_ptr, 2, 1L << 0, on_key_press, game);
-	mlx_hook(game->win_ptr, 3, 1L << 1, on_key_release, game);
-	mlx_hook(game->win_ptr, 17, 1L << 17, on_close, game);
+	mlx_hook(game->win_ptr, 2, 1L << 0, hook_key(on_key_press), game);
+	mlx_hook(game->win_ptr, 3, 1L << 1, hook_key(on_key_release), game);
+	mlx_hook(game->win_ptr, 17, 1L << 17, hook_game(on_close), game);
 	return (1);
 }

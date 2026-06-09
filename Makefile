@@ -34,6 +34,7 @@ SRC_FILES   = main.c \
               parsing/parse_map_utils2.c \
               visual/renderer.c \
               visual/render.c \
+              visual/hooks.c \
               visual/raycast.c \
               visual/raycast_utils.c \
               visual/draw.c \
