@@ -24,16 +24,23 @@ OBJ_DIR     = obj
 LIBFT_DIR   = libft
 
 SRC_FILES   = main.c \
-              parsing/parse_config.c \
-              parsing/parse_map.c \
-			  parsing/parse_map_utils.c \
-			  visual/events_utils.c \
+              utils/init.c \
+              utils/cleanup.c \
               utils/parser_utils.c \
+              parsing/parse_config.c \
+              parsing/parse_file.c \
+              parsing/parse_map.c \
+              parsing/parse_map_utils.c \
+              parsing/parse_map_utils2.c \
               visual/renderer.c \
+              visual/render.c \
               visual/raycast.c \
+              visual/raycast_utils.c \
               visual/draw.c \
               visual/texture.c \
-              visual/events.c
+              visual/events.c \
+              visual/movement.c \
+              visual/movement_utils.c
 
 SRC         = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ         = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))

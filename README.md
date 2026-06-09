@@ -42,32 +42,6 @@ In accordance with the 42 curriculum guidelines, Artificial Intelligence (AI) wa
 * **Code Review**: AI was used to explain complex ray-casting mathematical formulas and to simulate peer-review scenarios to identify potential logical gaps before the final evaluation.
 All AI-generated suggestions were thoroughly reviewed, tested, and understood before being integrated into the project.
 
-## Responsáveis
-
-- Parte Visual: `src/visual/` — atribuída ao membro responsável pela parte visual (sem nomes nem datas).
-
-## Running
-
-Compile and run the project using the provided Makefile. The program expects a `.cub` scene file as its only argument.
-
-```bash
-make
-./cub3D maps/map.cub
-```
-
-Controls: `W A S D` to move, `← →` to rotate, `ESC` to exit.
-
-## Quick test (no .cub required)
-
-During development a small harness mode is available to run a minimal map in memory without a `.cub` file. Build and run:
-
-```bash
-make
-./cub3D --harness
-```
-
-This is useful for iterating on visuals when a scene file is not ready.
-
 ## Notes for Linux / miniLibX
 
 - Ensure `minilibx-linux` is compiled (the repository includes a local copy in `minilibx-linux`).

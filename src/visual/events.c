@@ -12,148 +12,58 @@
 
 #include "cub3d.h"
 
-/* g_key_state is defined in events_utils.c */
-
-typedef int (*t_mlx_hook)();
-
-static t_mlx_hook	get_key_press_hook(void);
-static t_mlx_hook	get_key_release_hook(void);
-
 static int	map_key(int keycode)
 {
-    /* Support both macOS and Linux (X11) keycodes */
-	if (keycode == 65307 || keycode == 53) /* ESC */
+	if (keycode == 65307 || keycode == 53)
 		return (53);
-	if (keycode == 65361 || keycode == 123) /* left */
+	if (keycode == 65361 || keycode == 123)
 		return (123);
-	if (keycode == 65363 || keycode == 124) /* right */
+	if (keycode == 65363 || keycode == 124)
 		return (124);
-	if (keycode == 'w' /*119*/ || keycode == 13) /* forward */
+	if (keycode == 'w' || keycode == 13)
 		return (13);
-	if (keycode == 's' /*115*/ || keycode == 1) /* back */
+	if (keycode == 's' || keycode == 1)
 		return (1);
-	if (keycode == 'a' /*97*/ || keycode == 0) /* strafe left */
+	if (keycode == 'a' || keycode == 0)
 		return (0);
-	if (keycode == 'd' /*100*/ || keycode == 2) /* strafe right */
+	if (keycode == 'd' || keycode == 2)
 		return (2);
-	return (keycode);
+	return (-1);
 }
 
 static int	on_key_press(int keycode, t_game *game)
 {
-	int k = map_key(keycode);
-	void	movement_update(t_game *game)
-	{
-	const double move_speed_per_s = 3.0;
-	const double rot_speed_per_s = 2.5;
-	struct timeval tv;
-	double now;
-	double dt;
+	int	k;
 
-	gettimeofday(&tv, NULL);
-	now = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-	if (game->renderer.last_time <= 0.0)
-	dt = 0.016;
-	else
-	dt = now - game->renderer.last_time;
-	if (dt <= 0.0 || dt > 0.5)
-	dt = 0.016;
-	game->renderer.last_time = now;
+	k = map_key(keycode);
+	if (k == 53)
+		game->renderer.should_close = 1;
+	else if (k >= 0 && k < 1024)
+		game->keys[k] = 1;
+	return (0);
+}
 
-	double move_step = move_speed_per_s * dt;
-	double rot_step = rot_speed_per_s * dt;
+static int	on_key_release(int keycode, t_game *game)
+{
+	int	k;
 
-	if (g_key_state[13])
-		move_forward(game, move_step);
-	if (g_key_state[1])
-		move_back(game, move_step);
-	if (g_key_state[2])
-		strafe_right(game, move_step);
-	if (g_key_state[0])
-		strafe_left(game, move_step);
-	if (g_key_state[123])
-		rotate_left(game, rot_step);
-	if (g_key_state[124])
-		rotate_right(game, rot_step);
-	}
-	now = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-	if (game->renderer.last_time <= 0.0)
-		dt = 0.016;
-	else
-		dt = now - game->renderer.last_time;
-	if (dt <= 0.0 || dt > 0.5)
-		dt = 0.016;
-	game->renderer.last_time = now;
+	k = map_key(keycode);
+	if (k >= 0 && k < 1024)
+		game->keys[k] = 0;
+	return (0);
+}
 
-	double move_step = move_speed_per_s * dt;
-	double rot_step = rot_speed_per_s * dt;
+static int	on_close(t_game *game)
+{
+	game->renderer.should_close = 1;
+	return (0);
+}
 
-    /* forward (W) */
-	if (g_key_state[13])
-	{
-		new_x = game->player.x + game->player.dir_x * move_step;
-		new_y = game->player.y + game->player.dir_y * move_step;
-		if (!map_is_wall(&game->map, new_x, game->player.y))
-			game->player.x = new_x;
-		if (!map_is_wall(&game->map, game->player.x, new_y))
-			game->player.y = new_y;
-	}
-    /* back (S) */
-	if (g_key_state[1])
-	{
-		new_x = game->player.x - game->player.dir_x * move_step;
-		new_y = game->player.y - game->player.dir_y * move_step;
-		if (!map_is_wall(&game->map, new_x, game->player.y))
-			game->player.x = new_x;
-		if (!map_is_wall(&game->map, game->player.x, new_y))
-			game->player.y = new_y;
-	}
-    /* strafe right (D) */
-	if (g_key_state[2])
-	{
-		new_x = game->player.x + game->player.dir_y * move_step;
-		new_y = game->player.y - game->player.dir_x * move_step;
-		if (!map_is_wall(&game->map, new_x, game->player.y))
-			game->player.x = new_x;
-		if (!map_is_wall(&game->map, game->player.x, new_y))
-			game->player.y = new_y;
-	}
-    /* strafe left (A) */
-	if (g_key_state[0])
-	{
-		new_x = game->player.x - game->player.dir_y * move_step;
-		new_y = game->player.y + game->player.dir_x * move_step;
-		if (!map_is_wall(&game->map, new_x, game->player.y))
-			game->player.x = new_x;
-		if (!map_is_wall(&game->map, game->player.x, new_y))
-			game->player.y = new_y;
-	}
-    /* rotate left */
-	if (g_key_state[123])
-	{
-		double old_dir_x = game->player.dir_x;
-		double old_dir_y = game->player.dir_y;
-		double c = cos(rot_step);
-		double s = sin(rot_step);
-		game->player.dir_x = old_dir_x * c - old_dir_y * s;
-		game->player.dir_y = old_dir_x * s + old_dir_y * c;
-		double old_plane_x = game->player.plane_x;
-		double old_plane_y = game->player.plane_y;
-		game->player.plane_x = old_plane_x * c - old_plane_y * s;
-		game->player.plane_y = old_plane_x * s + old_plane_y * c;
-	}
-    /* rotate right */
-	if (g_key_state[124])
-	{
-		double old_dir_x = game->player.dir_x;
-		double old_dir_y = game->player.dir_y;
-		double c = cos(-rot_step);
-		double s = sin(-rot_step);
-		game->player.dir_x = old_dir_x * c - old_dir_y * s;
-		game->player.dir_y = old_dir_x * s + old_dir_y * c;
-		double old_plane_x = game->player.plane_x;
-		double old_plane_y = game->player.plane_y;
-		game->player.plane_x = old_plane_x * c - old_plane_y * s;
-		game->player.plane_y = old_plane_x * s + old_plane_y * c;
-	}
+int	events_init(t_game *game)
+{
+	mlx_do_key_autorepeatoff(game->mlx_ptr);
+	mlx_hook(game->win_ptr, 2, 1L << 0, on_key_press, game);
+	mlx_hook(game->win_ptr, 3, 1L << 1, on_key_release, game);
+	mlx_hook(game->win_ptr, 17, 1L << 17, on_close, game);
+	return (1);
 }

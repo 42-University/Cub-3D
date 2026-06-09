@@ -27,14 +27,11 @@ void	free_matrix(char **matrix)
 	free(matrix);
 }
 
-void	color_error(char **rgb, char *line)
+void	color_error(t_game *game, char **rgb, char *line)
 {
-	ft_putendl_fd("Error", 2);
-	ft_putendl_fd("Invalid color format or value.", 2);
 	if (rgb)
 		free_matrix(rgb);
-	free(line);
-	exit(1);
+	parse_fatal(game, line, "Invalid color format or value.");
 }
 
 int	is_map_line(char *line)
@@ -58,17 +55,17 @@ int	is_map_line(char *line)
 void	parse_line(t_game *game, char *line)
 {
 	if (ft_strncmp(line, "NO ", 3) == 0)
-		get_texture(&game->map.n_texture, line);
+		get_texture(game, &game->map.n_texture, line);
 	else if (ft_strncmp(line, "SO ", 3) == 0)
-		get_texture(&game->map.s_texture, line);
+		get_texture(game, &game->map.s_texture, line);
 	else if (ft_strncmp(line, "WE ", 3) == 0)
-		get_texture(&game->map.w_texture, line);
+		get_texture(game, &game->map.w_texture, line);
 	else if (ft_strncmp(line, "EA ", 3) == 0)
-		get_texture(&game->map.e_texture, line);
+		get_texture(game, &game->map.e_texture, line);
 	else if (ft_strncmp(line, "F ", 2) == 0)
-		get_color(game->map.floor_rgb, line);
+		get_color(game, game->map.floor_rgb, line);
 	else if (ft_strncmp(line, "C ", 2) == 0)
-		get_color(game->map.ceiling_rgb, line);
+		get_color(game, game->map.ceiling_rgb, line);
 }
 
 int	validade_map_chars(t_game *game)

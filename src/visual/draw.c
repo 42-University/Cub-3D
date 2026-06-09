@@ -19,23 +19,7 @@ void	put_pixel(t_img *img, int x, int y, int color)
 	if (x < 0 || y < 0 || x >= img->width || y >= img->height)
 		return ;
 	dst = img->pixels + (y * img->size_line + x * (img->bpp / 8));
-    *(unsigned int *)dst = color;
-}
-
-void	draw_vertical_line(t_game *game, int x, int height, int color)
-{
-	int	y;
-	int	start;
-
-	if (height > game->renderer.win_height)
-		height = game->renderer.win_height;
-	start = (game->renderer.win_height - height) / 2;
-	y = start;
-	while (y < start + height)
-	{
-		put_pixel(&game->renderer.img, x, y, color);
-		y++;
-	}
+	*(unsigned int *)dst = color;
 }
 
 void	fill_background(t_game *game)

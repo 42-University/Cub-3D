@@ -17,7 +17,6 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
 # include <sys/time.h>
 # include <math.h>
 # include <mlx.h>
@@ -75,7 +74,7 @@ typedef struct s_renderer
 	int		win_width;
 	int		win_height;
 	int		should_close;
-	double	last_time; /* timestamp of last frame in seconds */
+	double	last_time;
 }			t_renderer;
 
 typedef struct s_column_info
@@ -83,7 +82,7 @@ typedef struct s_column_info
 	double	distance;
 	int		face;
 	double	tex_offset;
-	int		flip; /* 1 if texture X should be flipped horizontally */
+	int		flip;
 }			t_column_info;
 
 typedef struct s_game
@@ -93,44 +92,90 @@ typedef struct s_game
 	void		*mlx_ptr;
 	void		*win_ptr;
 	t_renderer	renderer;
+	int			keys[1024];
+	t_list		*map_lines;
 }				t_game;
 
+typedef struct s_ray
+{
+	double	camera_x;
+	double	ray_dir_x;
+	double	ray_dir_y;
+	int		map_x;
+	int		map_y;
+	double	side_dist_x;
+	double	side_dist_y;
+	double	delta_dist_x;
+	double	delta_dist_y;
+	int		step_x;
+	int		step_y;
+	int		side;
+	double	perp_dist;
+}			t_ray;
+
+typedef struct s_draw
+{
+	int		line_height;
+	int		start;
+	int		end;
+	int		tex_x;
+	double	step;
+	double	tex_pos;
+}			t_draw;
+
+/* main / init / cleanup */
+void			init_game(t_game *game);
+void			free_game(t_game *game);
+void			renderer_destroy(t_game *game);
+
+/* renderer / render */
 int				renderer_init(t_game *game);
 int				renderer_loop(t_game *game);
-void			renderer_destroy(t_game *game);
+int				render_frame(t_game *game);
+
+/* raycast */
 int				raycast_column(t_game *game, int x, t_column_info *info);
+void			ray_finish(t_game *game, t_ray *r, t_column_info *info);
+void			ray_wall_face(t_ray *r, t_column_info *info);
+
+/* draw */
 void			put_pixel(t_img *img, int x, int y, int color);
-void			draw_vertical_line(t_game *game, int x, int height, int color);
 void			fill_background(t_game *game);
+
+/* texture */
 int				texture_load(void *mlx, const char *path, t_tex *texture);
 void			texture_free(void *mlx, t_tex *texture);
 int				texture_sample(t_tex *texture, int x, int y);
+
+/* events / movement */
 int				events_init(t_game *game);
 void			movement_update(t_game *game);
-/* events helpers */
-int			map_is_wall(t_map *map, double nx, double ny);
+double			get_delta_time(t_game *game);
+int				map_is_wall(t_map *map, double nx, double ny);
 void			move_forward(t_game *game, double step);
 void			move_back(t_game *game, double step);
 void			strafe_right(t_game *game, double step);
 void			strafe_left(t_game *game, double step);
 void			rotate_left(t_game *game, double rot_step);
 void			rotate_right(t_game *game, double rot_step);
-extern int		g_key_state[1024];
-//utils
+
+/* parsing utils */
 void			free_matrix(char **matrix);
-void		color_error(char **rgb, char *line);
+void			parse_fatal(t_game *game, char *line, char *msg);
+void			color_error(t_game *game, char **rgb, char *line);
 int				is_map_line(char *line);
 void			parse_line(t_game *game, char *line);
-void		get_texture(char **texture, char *line);
-void		get_color(int *color_array, char *line);
-//parse
+void			get_texture(t_game *game, char **texture, char *line);
+void			get_color(t_game *game, int *color_array, char *line);
+
+/* parsing */
 void			parse_file(t_game *game, char *filename);
-void			convert_list_to_matrix(t_game *game, t_list *map_lines);
-int			scan_map(t_game *game, size_t *width);
-char		**copy_padded_map(t_game *game, size_t width);
-int			flood_fill(t_map *map, char **grid, int x, int y);
-int			validade_map_chars(t_game *game);
-int			finalize_map(t_game *game);
+void			convert_list_to_matrix(t_game *game);
+int				scan_map(t_game *game, size_t *width);
+char			**copy_padded_map(t_game *game, size_t width);
+int				flood_fill(t_map *map, char **grid, int x, int y);
+int				validade_map_chars(t_game *game);
+int				finalize_map(t_game *game);
 int				validate_walls(t_game *game);
 
 #endif
