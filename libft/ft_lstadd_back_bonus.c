@@ -20,7 +20,7 @@ void	ft_lstadd_back(t_list **lst, t_list *new)
 		return ;
 	if (*lst == NULL)
 	{
-		*lst = new;
+        *lst = new;
 		return ;
 	}
 	node = ft_lstlast(*lst);

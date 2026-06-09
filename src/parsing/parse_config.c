@@ -12,23 +12,14 @@
 
 #include "cub3d.h"
 
-static void	color_error(char **rgb, char *line)
-{
-	if (rgb)
-		free_matrix(rgb);
-	if (line)
-		free(line);
-	printf("Error\nInvalid color specification.\n");
-	exit(1);
-}
-
-static void	get_texture(char **texture, char *line)
+void	get_texture(char **texture, char *line)
 {
 	int	i;
 
 	if (*texture != NULL)
 	{
-		printf("Error\nDuplicate texture found.\n");
+		ft_putendl_fd("Error", 2);
+		ft_putendl_fd("Duplicate texture found.", 2);
 		free(line);
 		exit(1);
 	}
@@ -58,14 +49,15 @@ static void	validate_and_save_color(int *color_array, char **rgb, char *line)
 	free_matrix(rgb);
 }
 
-static void	get_color(int *color_array, char *line)
+void	get_color(int *color_array, char *line)
 {
 	char	**rgb;
 	int		i;
 
 	if (color_array[0] != -1)
 	{
-		printf("Error\nDuplicate color found.\n");
+		ft_putendl_fd("Error", 2);
+		ft_putendl_fd("Duplicate color found.", 2);
 		free(line);
 		exit(1);
 	}
@@ -76,20 +68,20 @@ static void	get_color(int *color_array, char *line)
 	validate_and_save_color(color_array, rgb, line);
 }
 
-static void	parse_line(t_game *game, char *line)
+static void	load_map_lines(t_game *game, int fd, t_list **map_lines)
 {
-	if (ft_strncmp(line, "NO ", 3) == 0)
-		get_texture(&game->map.n_texture, line);
-	else if (ft_strncmp(line, "SO ", 3) == 0)
-		get_texture(&game->map.s_texture, line);
-	else if (ft_strncmp(line, "WE ", 3) == 0)
-		get_texture(&game->map.w_texture, line);
-	else if (ft_strncmp(line, "EA ", 3) == 0)
-		get_texture(&game->map.e_texture, line);
-	else if (ft_strncmp(line, "F ", 2) == 0)
-		get_color(game->map.floor_rgb, line);
-	else if (ft_strncmp(line, "C ", 2) == 0)
-		get_color(game->map.ceiling_rgb, line);
+	char	*line;
+
+	while (1)
+	{
+		line = get_next_line(fd);
+		if (!line)
+			break ;
+		parse_line(game, line);
+		if (is_map_line(line) == 1)
+			ft_lstadd_back(map_lines, ft_lstnew(ft_strdup(line)));
+		free(line);
+	}
 }
 
 void	parse_file(t_game *game, char *filename)
@@ -102,100 +94,13 @@ void	parse_file(t_game *game, char *filename)
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 	{
-		printf("Error\nCould not open the file.\n");
+		ft_putendl_fd("Error", 2);
+		ft_putendl_fd("Could not open the file.", 2);
 		exit(1);
 	}
-	while (1)
-	{
-		line = get_next_line(fd);
-		if (!line)
-			break ;
-		parse_line(game, line);
-		if (is_map_line(line) == 1)
-			ft_lstadd_back(&map_lines, ft_lstnew(ft_strdup(line)));
-		free(line);
-	}
+	load_map_lines(game, fd, &map_lines);
 	close(fd);
 	convert_list_to_matrix(game, map_lines);
-	/* compute map dimensions */
-	int h = 0;
-	size_t w = 0;
-	while (game->map.map[h])
-	{
-		size_t len = ft_strlen(game->map.map[h]);
-		if (len > w)
-			w = len;
-		h++;
-	}
-	game->map.height = h;
-	game->map.width = w;
-
-	/* basic validation of characters */
-	if (!validade_map_chars(game))
-	{
-		printf("Error\nInvalid map.\n");
+	if (!finalize_map(game))
 		exit(1);
-	}
-
-	/* find player position and orientation */
-	int found = 0;
-	for (size_t y = 0; y < game->map.height; y++)
-	{
-		for (int x = 0; game->map.map[y][x]; x++)
-		{
-			char c = game->map.map[y][x];
-			if (ft_strchr("NSEW", c))
-			{
-				if (found)
-				{
-					printf("Error\nInvalid map.\n");
-					exit(1);
-				}
-				found = 1;
-				game->player.x = x + 0.5;
-				game->player.y = y + 0.5;
-				if (c == 'N')
-				{
-					game->player.dir_x = 0.0;
-					game->player.dir_y = -1.0;
-					game->player.plane_x = 0.66;
-					game->player.plane_y = 0.0;
-				}
-				else if (c == 'S')
-				{
-					game->player.dir_x = 0.0;
-					game->player.dir_y = 1.0;
-					game->player.plane_x = -0.66;
-					game->player.plane_y = 0.0;
-				}
-				else if (c == 'E')
-				{
-					game->player.dir_x = 1.0;
-					game->player.dir_y = 0.0;
-					game->player.plane_x = 0.0;
-					game->player.plane_y = 0.66;
-				}
-				else if (c == 'W')
-				{
-					game->player.dir_x = -1.0;
-					game->player.dir_y = 0.0;
-					game->player.plane_x = 0.0;
-					game->player.plane_y = -0.66;
-				}
-				/* replace player char with empty space */
-				game->map.map[y][x] = '0';
-			}
-		}
-	}
-	if (!found)
-	{
-		printf("Error\nInvalid map.\n");
-		exit(1);
-	}
-
-	if (!validate_walls(game))
-	{
-		printf("Error\nInvalid map.\n");
-		exit(1);
-	}
 }

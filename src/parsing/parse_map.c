@@ -14,110 +14,60 @@
 
 void	convert_list_to_matrix(t_game *game, t_list *map_lines)
 {
-	int		i;
-	t_list	*current;
-	t_list	*temp;
+	int			i;
+	t_list		*current;
+	t_list		*next;
+	int			count;
 
-	game->map.map = malloc(sizeof(char *) * (ft_lstsize(map_lines) + 1));
+	count = ft_lstsize(map_lines);
+	game->map.map = malloc(sizeof(char *) * (count + 1));
 	if (!game->map.map)
 	{
-		printf("Error\nMemory allocation failed.\n");
+		ft_putendl_fd("Error", 2);
+		ft_putendl_fd("Memory allocation failed.", 2);
 		exit(1);
 	}
 	i = 0;
 	current = map_lines;
-	while (current != NULL)
+	while (current)
 	{
-		game->map.map[i++] = (char *)current->content;
-		/* strip trailing newline if present */
-		{
-			size_t l = ft_strlen(game->map.map[i - 1]);
-			if (l > 0 && game->map.map[i - 1][l - 1] == '\n')
-				game->map.map[i - 1][l - 1] = '\0';
-		}
-		current = current->next;
+		game->map.map[i] = current->content;
+		next = current->next;
+		free(current);
+		current = next;
+		i++;
 	}
 	game->map.map[i] = NULL;
-	while (map_lines != NULL)
-	{
-		temp = map_lines;
-		map_lines = map_lines->next;
-		free(temp);
-	}
-}
-
-int	validade_map_chars(t_game *game)
-{
-	int	y;
-	int	x;
-	int	player;
-
-	player = 0;
-	y = 0;
-	while (game->map.map[y])
-	{
-		x = 0;
-		while (game->map.map[y][x])
-		{
-			if (ft_strchr(" 01NSEW", game->map.map[y][x]) == NULL)
-				return (0);
-			if (ft_strchr("NSEW", game->map.map[y][x]) != NULL)
-				player++;
-			x++;
-		}
-		y++;
-	}
-	if (player != 1)
-		return (0);
-	return (1);
-}
-
-static int	flood_fill(char **map_copy, int y, int x, int max_y)
-{
-	if (y < 0 || y >= max_y)
-		return (0);
-	if (x < 0 || x >= (int)ft_strlen(map_copy[y]))
-		return (0);
-	if (map_copy[y][x] == ' ')
-		return (0);
-	if (map_copy[y][x] == '1' || map_copy[y][x] == 'X')
-		return (1);
-	map_copy[y][x] = 'X';
-	if (flood_fill(map_copy, y - 1, x, max_y) == 0)
-		return (0);
-	if (flood_fill(map_copy, y + 1, x, max_y) == 0)
-		return (0);
-	if (flood_fill(map_copy, y, x - 1, max_y) == 0)
-		return (0);
-	if (flood_fill(map_copy, y, x + 1, max_y) == 0)
-		return (0);
-	return (1);
 }
 
 int	validate_walls(t_game *game)
 {
-	char	**map_copy;
-	int		max_y;
-	int		i;
-	int		is_closed;
+	char	**copy;
+	int		result;
 
-	max_y = 0;
-	while (game->map.map[max_y])
-		max_y++;
-	map_copy = malloc(sizeof(char *) * (max_y + 1));
-	if (!map_copy)
+	copy = copy_padded_map(game, game->map.width);
+	if (!copy)
 	{
-		printf("Error\nMemory allocation failed.\n");
+		ft_putendl_fd("Error", 2);
+		ft_putendl_fd("Memory allocation failed.", 2);
 		exit(1);
 	}
-	i = 0;
-	while (i < max_y)
-	{
-		map_copy[i] = ft_strdup(game->map.map[i]);
-		i++;
-	}
-	map_copy[i] = NULL;
-	is_closed = flood_fill(map_copy, game->player.y, game->player.x, max_y);
-	free_matrix(map_copy);
-	return (is_closed);
+	result = flood_fill(&game->map, copy, (int)game->player.x,
+			(int)game->player.y);
+	free_matrix(copy);
+	return (result);
+}
+
+int	finalize_map(t_game *game)
+{
+	size_t	width;
+
+	if (!validade_map_chars(game))
+		return (ft_putendl_fd("Error", 2), ft_putendl_fd("Invalid map.", 2), 0);
+	if (!scan_map(game, &width))
+		return (ft_putendl_fd("Error", 2), ft_putendl_fd("Invalid map.", 2), 0);
+	game->map.width = width;
+	if (!validate_walls(game))
+		return (ft_putendl_fd("Error", 2), ft_putendl_fd("Invalid map.", 2), 0);
+	return (1);
 }

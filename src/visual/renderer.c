@@ -12,6 +12,8 @@
 
 #include "cub3d.h"
 
+typedef int (*t_mlx_hook)();
+
 static int	on_key_press(int keycode, t_game *game)
 {
 	if (keycode == 53)
@@ -74,7 +76,11 @@ static int	render_frame(t_game *game)
 						tex_x = 0;
 				}
 				step_tex = (double)tex->height / (double)line_height;
-				tex_pos = (draw_start - game->renderer.win_height / 2 + line_height / 2) * step_tex;
+				double center_offset;
+				double win_center;
+				win_center = game->renderer.win_height / 2;
+				center_offset = draw_start - win_center + line_height / 2;
+				tex_pos = center_offset * step_tex;
 				y = draw_start;
 				while (y <= draw_end)
 				{
@@ -85,9 +91,12 @@ static int	render_frame(t_game *game)
 						tex_y = tex->height - 1;
 					int sample = texture_sample(tex, tex_x, tex_y);
 					double shade = 1.0 / (1.0 + 0.05 * col.distance);
-					int r = (int)((((sample >> 16) & 0xFF)) * shade);
-					int g = (int)((((sample >> 8) & 0xFF)) * shade);
-					int b = (int)(((sample & 0xFF)) * shade);
+					int sr = (sample >> 16) & 0xFF;
+					int sg = (sample >> 8) & 0xFF;
+					int sb = sample & 0xFF;
+					int r = (int)(sr * shade);
+					int g = (int)(sg * shade);
+					int b = (int)(sb * shade);
 					int color = (r << 16) | (g << 8) | b;
 					put_pixel(&game->renderer.img, x, y, color);
 					tex_pos += step_tex;
@@ -96,7 +105,7 @@ static int	render_frame(t_game *game)
 			}
 			else
 			{
-				/* fallback to solid color per face with shading */
+                /* fallback to solid color per face with shading */
 				int color;
 				double shade;
 
@@ -128,6 +137,42 @@ static int	render_frame(t_game *game)
 	return (0);
 }
 
+static t_mlx_hook	get_key_press_hook(void)
+{
+	union
+	{
+		t_mlx_hook		generic;
+		int (*typed)(int, t_game *);
+	} hook;
+
+	hook.typed = on_key_press;
+	return (hook.generic);
+}
+
+static t_mlx_hook	get_close_hook(void)
+{
+	union
+	{
+		t_mlx_hook		generic;
+		int (*typed)(t_game *);
+	} hook;
+
+	hook.typed = on_close;
+	return (hook.generic);
+}
+
+static t_mlx_hook	get_render_hook(void)
+{
+	union
+	{
+		t_mlx_hook		generic;
+		int (*typed)(t_game *);
+	} hook;
+
+	hook.typed = render_frame;
+	return (hook.generic);
+}
+
 int	renderer_init(t_game *game)
 {
 	game->renderer.win_width = 1024;
@@ -149,7 +194,7 @@ int	renderer_init(t_game *game)
 			&game->renderer.img.endian);
 	game->renderer.img.width = game->renderer.win_width;
 	game->renderer.img.height = game->renderer.win_height;
-	/* initialize timing for delta-time movement */
+    /* initialize timing for delta-time movement */
 	{
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
@@ -157,7 +202,7 @@ int	renderer_init(t_game *game)
 	}
 	if (!events_init(game))
 		return (0);
-	/* load textures if paths are provided */
+    /* load textures if paths are provided */
 	{
 		const char *paths[4] = {game->map.n_texture, game->map.s_texture,
 			game->map.w_texture, game->map.e_texture};
@@ -171,7 +216,11 @@ int	renderer_init(t_game *game)
 			game->renderer.textures[i].width = 0;
 			game->renderer.textures[i].height = 0;
 			if (paths[i])
-				texture_load(game->mlx_ptr, paths[i], &game->renderer.textures[i]);
+			{
+				t_tex *texptr;
+				texptr = &game->renderer.textures[i];
+				texture_load(game->mlx_ptr, paths[i], texptr);
+			}
 			i++;
 		}
 	}
@@ -180,10 +229,9 @@ int	renderer_init(t_game *game)
 
 int	renderer_loop(t_game *game)
 {
-	mlx_hook(game->win_ptr, 2, 1L << 0, (int (*)(int, void *))on_key_press,
-		game);
-	mlx_hook(game->win_ptr, 17, 1L << 0, (int (*)(void *))on_close, game);
-	mlx_loop_hook(game->mlx_ptr, (int (*)(void *))render_frame, game);
+	mlx_hook(game->win_ptr, 2, 1L << 0, get_key_press_hook(), game);
+	mlx_hook(game->win_ptr, 17, 1L << 0, get_close_hook(), game);
+	mlx_loop_hook(game->mlx_ptr, get_render_hook(), game);
 	mlx_loop(game->mlx_ptr);
 	return (0);
 }

@@ -19,7 +19,7 @@ void	put_pixel(t_img *img, int x, int y, int color)
 	if (x < 0 || y < 0 || x >= img->width || y >= img->height)
 		return ;
 	dst = img->pixels + (y * img->size_line + x * (img->bpp / 8));
-	*(unsigned int *)dst = color;
+    *(unsigned int *)dst = color;
 }
 
 void	draw_vertical_line(t_game *game, int x, int height, int color)

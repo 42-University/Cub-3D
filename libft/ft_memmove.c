@@ -24,14 +24,14 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	if (d < s)
 	{
 		while (n--)
-			*d++ = *s++;
+            *d++ = *s++;
 	}
 	else
 	{
 		d += n;
 		s += n;
 		while (n--)
-			*--d = *--s;
+            *--d = *--s;
 	}
 	return (dest);
 }

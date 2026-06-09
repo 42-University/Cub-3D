@@ -21,21 +21,21 @@ static int	map_get(t_map *map, int x, int y)
 
 int	raycast_column(t_game *game, int x, t_column_info *info)
 {
-	double    camera_x;
-	double    ray_dir_x;
-	double    ray_dir_y;
-	int       map_x;
-	int       map_y;
-	double    side_dist_x;
-	double    side_dist_y;
-	double    delta_dist_x;
-	double    delta_dist_y;
-	int       step_x;
-	int       step_y;
-	int       hit;
-	int       side;
-	double    perp_dist;
-	double    wall_x;
+	double	camera_x;
+	double	ray_dir_x;
+	double	ray_dir_y;
+	int	   map_x;
+	int	   map_y;
+	double	side_dist_x;
+	double	side_dist_y;
+	double	delta_dist_x;
+	double	delta_dist_y;
+	int	   step_x;
+	int	   step_y;
+	int	   hit;
+	int	   side;
+	double	perp_dist;
+	double	wall_x;
 
 	camera_x = 2.0 * x / (double)game->renderer.win_width - 1.0;
 	ray_dir_x = game->player.dir_x + game->player.plane_x * camera_x;
@@ -100,7 +100,7 @@ int	raycast_column(t_game *game, int x, t_column_info *info)
 	info->distance = perp_dist;
 	info->tex_offset = wall_x;
     /* determine if texture X should be flipped to match orientation */
-    info->flip = 0;
+	info->flip = 0;
 	if (side == 0)
 	{
 		if (ray_dir_x > 0)
@@ -115,7 +115,7 @@ int	raycast_column(t_game *game, int x, t_column_info *info)
 		else
 			info->face = 0; /* north */
 	}
-    if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
-        info->flip = 1;
+	if ((side == 0 && ray_dir_x > 0) || (side == 1 && ray_dir_y < 0))
+		info->flip = 1;
 	return (1);
 }

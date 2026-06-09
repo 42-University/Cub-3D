@@ -107,14 +107,30 @@ void			texture_free(void *mlx, t_tex *texture);
 int				texture_sample(t_tex *texture, int x, int y);
 int				events_init(t_game *game);
 void			movement_update(t_game *game);
+/* events helpers */
+int			map_is_wall(t_map *map, double nx, double ny);
+void			move_forward(t_game *game, double step);
+void			move_back(t_game *game, double step);
+void			strafe_right(t_game *game, double step);
+void			strafe_left(t_game *game, double step);
+void			rotate_left(t_game *game, double rot_step);
+void			rotate_right(t_game *game, double rot_step);
+extern int		g_key_state[1024];
 //utils
 void			free_matrix(char **matrix);
+void		color_error(char **rgb, char *line);
 int				is_map_line(char *line);
+void			parse_line(t_game *game, char *line);
+void		get_texture(char **texture, char *line);
+void		get_color(int *color_array, char *line);
 //parse
 void			parse_file(t_game *game, char *filename);
 void			convert_list_to_matrix(t_game *game, t_list *map_lines);
-int				validade_map_chars(t_game *game);
+int			scan_map(t_game *game, size_t *width);
+char		**copy_padded_map(t_game *game, size_t width);
+int			flood_fill(t_map *map, char **grid, int x, int y);
+int			validade_map_chars(t_game *game);
+int			finalize_map(t_game *game);
 int				validate_walls(t_game *game);
-int		check_extension(const char *filename);
 
 #endif

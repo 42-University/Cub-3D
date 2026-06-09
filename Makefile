@@ -15,6 +15,7 @@ NAME        = cub3D
 CC          = cc
 CFLAGS      = -Wall -Wextra -Werror -g3
 MLX_DIR     = minilibx-linux
+MLX_LIB     = $(MLX_DIR)/libmlx.a
 MLX_FLAGS   = -L$(MLX_DIR) -lmlx -lX11 -lXext -lm
 
 SRC_DIR     = src
@@ -25,6 +26,8 @@ LIBFT_DIR   = libft
 SRC_FILES   = main.c \
               parsing/parse_config.c \
               parsing/parse_map.c \
+			  parsing/parse_map_utils.c \
+			  visual/events_utils.c \
               utils/parser_utils.c \
               visual/renderer.c \
               visual/raycast.c \
@@ -41,15 +44,19 @@ LIBFT       = $(LIBFT_DIR)/libft.a
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJ)
-	@# ensure miniLibX headers exist
-	@test -f $(MLX_DIR)/mlx.h || { \
-		echo "miniLibX not found in $(MLX_DIR). Please clone and build it:"; \
-		echo "  git clone https://github.com/42Paris/minilibx-linux.git $(MLX_DIR)"; \
-		echo "  cd $(MLX_DIR) && make"; \
-		exit 1; }
+$(NAME): $(LIBFT) $(MLX_LIB) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 	@echo "$(NAME) compiled successfully!"
+
+$(MLX_LIB):
+	@test -f $(MLX_DIR)/mlx.h || { \
+		echo "miniLibX not found in $(MLX_DIR). Please clone it first:"; \
+		echo "  git clone https://github.com/42Paris/minilibx-linux.git $(MLX_DIR)"; \
+		exit 1; }
+	@$(MAKE) -C $(MLX_DIR) all || true
+	@test -f $@ || { \
+		echo "miniLibX build failed. Check $(MLX_DIR) for errors."; \
+		exit 1; }
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
