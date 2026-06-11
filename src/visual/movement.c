@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: liferrei <liferrei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 20:00:00 by liferrei          #+#    #+#             */
-/*   Updated: 2026/05/04 20:00:00 by liferrei         ###   ########.fr       */
+/*   Updated: 2026/06/11 16:24:21 by tkenji-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,12 @@ void	movement_update(t_game *game)
 		move_forward(game, move);
 	if (game->keys[1])
 		move_back(game, move);
-	if (game->keys[2])
-		strafe_right(game, move);
 	if (game->keys[0])
+		strafe_right(game, move);
+	if (game->keys[2])
 		strafe_left(game, move);
-	if (game->keys[123])
-		rotate_left(game, rot);
 	if (game->keys[124])
+		rotate_left(game, rot);
+	if (game->keys[123])
 		rotate_right(game, rot);
 }

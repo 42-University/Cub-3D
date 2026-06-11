@@ -6,7 +6,7 @@
 /*   By: tkenji-u <tkenji-u@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 12:55:47 by tkenji-u          #+#    #+#             */
-/*   Updated: 2025/07/30 10:11:46 by tkenji-u         ###   ########.fr       */
+/*   Updated: 2026/06/11 16:53:49 by tkenji-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,14 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	if (d < s)
 	{
 		while (n--)
-            *d++ = *s++;
+			*d++ = *s++;
 	}
 	else
 	{
 		d += n;
 		s += n;
 		while (n--)
-            *--d = *--s;
+			*--d = *--s;
 	}
 	return (dest);
 }
